@@ -7,19 +7,21 @@ import { Entypo } from '@expo/vector-icons';
 
 import { useNavigation } from '@react-navigation/native';
 
-import { Background } from '../../components/Background';
-
 import logoImg from '../../assets/logo-nlw-esports.png';
 
 import { styles } from './styles';
 import { THEME } from '../../theme';
 
 import { GameParams } from '../../@types/navigation';
+
+import { Background } from '../../components/Background';
 import { Headling } from '../../components/Headling';
 import { DuoCard, DuoCardProps } from '../../components/DuoCard';
+import { DuoMatch } from '../../components/DuoMatch';
 
 export const Game: React.FC = () => {
     const [duos, setDuos] = useState<DuoCardProps[]>([]);
+    const [discordDuoSelected, setDiscordDuoSelected] = useState<string>('');
 
     const { params } = useRoute();
     const game = params as GameParams;
@@ -28,8 +30,14 @@ export const Game: React.FC = () => {
 
     const handleGoBack = () => goBack();
 
+    const getDiscordUser = async (adsId: string) => {
+        fetch(`https://1ce7-2804-1c8-8259-dc00-1817-a573-d647-c638.sa.ngrok.io/ads/${adsId}/discord`)
+        .then(res => res.json())
+        .then(data => setDiscordDuoSelected(data.discord));
+    };
+
     useEffect(() => {
-        fetch(`https://5ff7-2804-1c8-8259-dc00-d8e8-3ec4-a2f-39cb.sa.ngrok.io/games/${game.id}/ads`)
+        fetch(`https://1ce7-2804-1c8-8259-dc00-1817-a573-d647-c638.sa.ngrok.io/games/${game.id}/ads`)
         .then(res => res.json())
         .then(data => setDuos(data));
     }, []);
@@ -68,11 +76,17 @@ export const Game: React.FC = () => {
                 <FlatList 
                  data={ duos }
                  keyExtractor={ item => item.id }
-                 renderItem={ ({ item }) => <DuoCard data={ item } onConnect={ () => {} } /> }
+                 renderItem={ ({ item }) => <DuoCard data={ item } onConnect={ () => getDiscordUser(item.id) } /> }
                  horizontal
                  contentContainerStyle={ duos.length > 0 ? styles.contentList : styles.emptyListContent }
                  showsHorizontalScrollIndicator={ false }
                  ListEmptyComponent={ () => <Text style={ styles.emptyListText }>Não há anúncios publicados ainda.</Text> }
+                />
+
+                <DuoMatch 
+                 visible={ discordDuoSelected.length > 0 }
+                 onClose={ () => setDiscordDuoSelected('') }
+                 discord={ discordDuoSelected }
                 />
 
             </SafeAreaView>

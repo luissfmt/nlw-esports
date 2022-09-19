@@ -21,7 +21,7 @@ export const Home: React.FC = () => {
     const handleOpenGame = ({ id, title, bannerUrl }: GameCardProps) => navigate('game', { id, title, bannerUrl });
 
     useEffect(() => {
-        fetch('https://5ff7-2804-1c8-8259-dc00-d8e8-3ec4-a2f-39cb.sa.ngrok.io/games')
+        fetch('https://1ce7-2804-1c8-8259-dc00-1817-a573-d647-c638.sa.ngrok.io/games')
         .then(res => res.json())
         .then(data => setGames(data));
     }, []);
